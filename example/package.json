@@ -39,7 +39,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "core-js": "^3.6.4"
+    "core-js": "^3.6.4",
+    "wolfsbane": "workspace:^0.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",

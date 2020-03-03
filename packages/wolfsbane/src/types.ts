@@ -3,8 +3,10 @@ export interface Ports {
 }
 
 export interface Message {
-  tabId?: string;
   action: string;
+  args?: any[];
+  tabId?: string;
+  [key: string]: any;
 }
 
 export type Port = chrome.runtime.Port;
