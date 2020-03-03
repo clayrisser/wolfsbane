@@ -5,7 +5,7 @@ export interface Ports {
 export interface Message {
   action: string;
   args?: any[];
-  tabId?: string;
+  tabId?: number;
   [key: string]: any;
 }
 

@@ -1,42 +1,29 @@
-import { Actions, Message, Port, Ports } from './types';
+import { Message, Port, Ports } from './types';
 
-const connections: Ports = {};
-
-export function postMessage(tabId: number, message: Message) {
-  if (tabId in connections) {
-    return connections[tabId.toString()].postMessage(message);
-  }
-}
+const tabPorts: Ports = {};
 
 export function registerBackground() {
-  chrome.runtime.onConnect.addListener((port: Port) => {
-    function handleMessage(message: Message, _port: Port) {
-      const tabId = (message.tabId || port.sender?.tab?.id || null) as
-        | number
-        | null;
-      const actions: Actions = {
-        register() {
-          if (
-            port.sender?.tab?.id &&
-            !(port.sender.tab.id.toString() in connections)
-          ) {
-            connections[port.sender.tab.id.toString()] = port;
-          }
-        },
-        log() {
-          return tabId ? postMessage(tabId, message) : undefined;
+  chrome.runtime.onConnect.addListener((backgroundPort: Port) => {
+    function handleMessage(message: Message, clientPort: Port) {
+      if (message.action === 'registerTab') {
+        if (
+          clientPort.sender?.tab?.id &&
+          !(clientPort.sender.tab.id.toString() in tabPorts)
+        ) {
+          tabPorts[clientPort.sender.tab.id.toString()] = clientPort;
         }
-      };
-      const action = ((actionName: string) => actions[actionName])(
-        message.action
-      );
-      return action();
+        return;
+      }
+      if (typeof message.action === 'undefined') return;
+      const tabId = message.tabId || clientPort.sender?.tab?.id;
+      if (typeof message.tabId === 'undefined') return;
+      return tabPorts[tabId?.toString() || '']?.postMessage(message);
     }
-    port.onMessage.addListener(handleMessage);
-    port.onDisconnect.addListener((port: Port) => {
+    backgroundPort.onMessage.addListener(handleMessage);
+    backgroundPort.onDisconnect.addListener((port: Port) => {
       port.onMessage.removeListener(handleMessage);
-      Object.keys(connections).forEach((tabIdString: string) => {
-        if (connections[tabIdString] == port) delete connections[tabIdString];
+      Object.keys(tabPorts).forEach((tabIdString: string) => {
+        if (tabPorts[tabIdString] == port) delete tabPorts[tabIdString];
       });
     });
   });

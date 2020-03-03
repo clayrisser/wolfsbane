@@ -1,3 +1,6 @@
-const tabId = chrome.devtools.inspectedWindow.tabId;
-const port = chrome.runtime.connect({ name: 'content' });
-port.postMessage({ action: 'log', text: 'wow', tabId });
+import Wolfsbane from 'wolfsbane';
+
+const wolfsbane = new Wolfsbane(chrome.devtools.inspectedWindow.tabId);
+const { logger } = wolfsbane;
+
+logger.info('hello', 'wolfsbane');

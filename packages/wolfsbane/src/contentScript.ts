@@ -1,18 +1,20 @@
 import Wolfsbane from '.';
-import { Actions } from './types';
+import { Actions, Message } from './types';
+
+export const actions: Actions = {
+  log(level: string, ...args: any[]) {
+    return ((console as unknown) as Actions)[level || 'log'](...args);
+  }
+};
 
 export function registerContentScript() {
   const wolfsbane = new Wolfsbane();
-  wolfsbane.port.onMessage.addListener(message => {
-    const actions: Actions = {
-      log() {
-        return ((console as unknown) as Actions)[message.level || 'log'](
-          ...message.args
-        );
-      }
-    };
+  wolfsbane.backgroundPort.onMessage.addListener((message: Message) => {
     const action = actions[message.action];
-    return action();
+    if (message.action === 'log') {
+      return action(message.level || 'log', ...(message.args || []));
+    }
+    if (action) return action(...(message.args || []));
+    return;
   });
-  wolfsbane.logger.info('howdy');
 }

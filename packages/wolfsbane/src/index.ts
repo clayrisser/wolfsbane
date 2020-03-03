@@ -1,17 +1,17 @@
 import { Message } from './types';
 
 export default class Wolfsbane {
-  public postMessage: (message: Message) => void;
+  backgroundPort = chrome.runtime.connect({ name: 'content' });
 
-  tabId: number | null;
+  constructor(public tabId?: number) {
+    this.backgroundPort.postMessage({ action: 'registerTab' });
+  }
 
-  constructor(
-    public port = chrome.runtime.connect({ name: 'content' }),
-    tabId?: number
-  ) {
-    this.tabId = tabId || this.port.sender?.tab?.id || null;
-    this.postMessage = this.port.postMessage;
-    this.postMessage({ action: 'register' });
+  postMessage(message: Message) {
+    return this.backgroundPort.postMessage({
+      ...message,
+      ...(this.tabId ? { tabId: this.tabId } : {})
+    });
   }
 
   logger = {
@@ -25,3 +25,6 @@ export default class Wolfsbane {
       this.postMessage({ action: 'log', level: 'debug', args })
   };
 }
+
+export * from './background';
+export * from './contentScript';
