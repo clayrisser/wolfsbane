@@ -1,0 +1,21 @@
+{
+  "name": "reactant",
+  "description": "write once . . . render everywhere",
+  "version": "0.0.320",
+  "files": [
+    "packages"
+  ],
+  "scripts": {
+    "bootstrap": "pnpm install",
+    "build": "npm run exec -- build",
+    "clean": "npm run exec -- clean",
+    "exec": "pnpm recursive --workspace-concurrency=Infinity run --filter={packages}",
+    "publish": "pnpm -r publish --filter={packages} --access=public",
+    "purge": "git clean -fXd",
+    "update": "pnpm -r update -L"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "pnpm": "^4.9.3"
+  }
+}

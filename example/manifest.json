@@ -1,19 +1,19 @@
 {
-  "name": "Styled System Debugger",
+  "name": "Wolfsbane",
   "version": "1.0",
-  "description": "debug styled system",
+  "description": "subdues the werewolf in the chrome dev tools api",
   "manifest_version": 2,
   "devtools_page": "devtools.html",
   "permissions": ["tabs"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["contentScript.js"]
+      "js": ["lib/contentScript.js"]
     }
   ],
   "background": {
     "scripts": ["background.js"],
     "persistent": false
   },
-  "web_accessible_resources": ["injectable.js"]
+  "web_accessible_resources": ["lib/injectable.js"]
 }

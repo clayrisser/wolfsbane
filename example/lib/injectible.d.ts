@@ -1,0 +1,1 @@
+declare function overrideConfirm(): void;
